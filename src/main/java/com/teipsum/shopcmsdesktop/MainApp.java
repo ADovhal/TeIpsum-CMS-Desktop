@@ -14,15 +14,13 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(
-                Objects.requireNonNull(getClass().getResource("/com/teipsum/shopcmsdesktop/MainWindow.fxml"))
+                Objects.requireNonNull(getClass().getResource("/com/teipsum/shopcmsdesktop/login/LoginView.fxml"))
         );
-        primaryStage.setTitle("Shop CMS");
+        primaryStage.setTitle("Shop CMS - Login");
         primaryStage.setScene(new Scene(root, 1200, 700));
         primaryStage.setMinWidth(900);
         primaryStage.setMinHeight(600);
         primaryStage.show();
-
-        System.out.println("API URL: " + AppConfig.getApiBaseUrl());
     }
 
     public static void main(String[] args) {
