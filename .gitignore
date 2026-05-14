@@ -36,4 +36,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-config.properties.local
+config.local.properties
