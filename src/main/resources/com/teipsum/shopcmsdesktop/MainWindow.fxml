@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.teipsum.shopcmsdesktop.ui.MainWindow"
+            prefWidth="1200" prefHeight="700">
+
+    <center>
+        <Label text="Shop CMS — Loading..." style="-fx-font-size: 24px;"/>
+    </center>
+
+</BorderPane>
