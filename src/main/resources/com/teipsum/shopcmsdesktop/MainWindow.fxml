@@ -9,8 +9,24 @@
             fx:controller="com.teipsum.shopcmsdesktop.ui.MainWindow"
             prefWidth="1200" prefHeight="700">
 
+    <top>
+        <HBox styleClass="form-card" spacing="16" alignment="CENTER_LEFT"
+              style="-fx-padding: 16px 24px;">
+            <Label text="👑 Shop CMS" styleClass="page-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ Add Product" styleClass="submit-button"
+                    onAction="#handleAddProduct"/>
+            <Button text="Logout" styleClass="cancel-button"
+                    onAction="#handleLogout"/>
+        </HBox>
+    </top>
+
     <center>
-        <Label text="Shop CMS — Loading..." style="-fx-font-size: 24px;"/>
+        <VBox alignment="CENTER" spacing="16">
+            <Label text="Product Management" styleClass="page-title"/>
+            <Label text="Click '+ Add Product' to get started"
+                   styleClass="page-subtitle"/>
+        </VBox>
     </center>
 
 </BorderPane>
