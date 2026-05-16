@@ -26,7 +26,7 @@ public class ProductService {
             .connectTimeout(Duration.ofSeconds(AppConfig.getApiTimeoutSeconds()))
             .build();
 
-    private static final String PRODUCTS_PATH = "/api/admin/products";
+    private static final String PRODUCTS_PATH = "/admin/products";
 
     public static Product createProduct(
             String title,

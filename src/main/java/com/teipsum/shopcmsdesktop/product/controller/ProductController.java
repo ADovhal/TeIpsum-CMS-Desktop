@@ -12,14 +12,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,11 +55,16 @@ public class ProductController {
     @FXML private FlowPane sizesBox;
     @FXML private TextField customSizeField;
     @FXML private FlowPane imagePreviewBox;
+    @FXML private VBox dropZone;
+    @FXML private Label dropZoneLabel;
     @FXML private CheckBox availableCheck;
     @FXML private Button submitButton;
+    @FXML private ScrollPane scrollPane;
 
     private final List<String> selectedSizes = new ArrayList<>();
     private final List<File> selectedImages = new ArrayList<>();
+    private final List<Button> standardSizeButtons = new ArrayList<>();
+    private final List<Button> customSizeButtons = new ArrayList<>();
 
     private static final List<String> STANDARD_SIZES =
             List.of("XS", "S", "M", "L", "XL", "XXL", "XXXL",
@@ -55,7 +74,67 @@ public class ProductController {
     public void initialize() {
         categoryCombo.getItems().addAll(ProductCategory.values());
         genderCombo.getItems().addAll(Gender.values());
-        renderSizeChips();
+        setupDropZone();
+        createSizeButtonsOnce();
+        updateSizeButtonsState();
+    }
+
+    private void setupDropZone() {
+        dropZone.setOnDragOver(this::handleDragOver);
+        dropZone.setOnDragEntered(this::handleDragEntered);
+        dropZone.setOnDragExited(this::handleDragExited);
+        dropZone.setOnDragDropped(this::handleDragDropped);
+    }
+
+    private void handleDragOver(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles()) {
+            boolean hasImages = db.getFiles().stream()
+                    .anyMatch(this::isImageFile);
+            if (hasImages) {
+                event.acceptTransferModes(TransferMode.COPY);
+            }
+        }
+        event.consume();
+    }
+
+    private void handleDragEntered(DragEvent event) {
+        dropZone.getStyleClass().add("drop-zone-active");
+        dropZoneLabel.setText("Drop images here!");
+        event.consume();
+    }
+
+    private void handleDragExited(DragEvent event) {
+        dropZone.getStyleClass().remove("drop-zone-active");
+        dropZoneLabel.setText("Drag & drop images here or click Choose Images");
+        event.consume();
+    }
+
+    private void handleDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        if (db.hasFiles()) {
+            for (File file : db.getFiles()) {
+                if (isImageFile(file) && !selectedImages.contains(file)) {
+                    selectedImages.add(file);
+                    success = true;
+                }
+            }
+            if (success) {
+                renderImagePreviews();
+            }
+        }
+        event.setDropCompleted(success);
+        event.consume();
+        dropZone.getStyleClass().remove("drop-zone-active");
+        dropZoneLabel.setText("Drag & drop images here or click Choose Images");
+    }
+
+    private boolean isImageFile(File file) {
+        String name = file.getName().toLowerCase();
+        return name.endsWith(".jpg") || name.endsWith(".jpeg")
+                || name.endsWith(".png") || name.endsWith(".webp")
+                || name.endsWith(".gif") || name.endsWith(".bmp");
     }
 
     @FXML
@@ -77,7 +156,7 @@ public class ProductController {
         if (!size.isEmpty() && !selectedSizes.contains(size)) {
             selectedSizes.add(size);
             customSizeField.clear();
-            renderSizeChips();
+            updateSizeButtonsState();
         }
     }
 
@@ -87,13 +166,17 @@ public class ProductController {
         chooser.setTitle("Select Product Images");
         chooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Images",
-                        "*.jpg", "*.jpeg", "*.png", "*.webp")
+                        "*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif")
         );
         List<File> files = chooser.showOpenMultipleDialog(
                 submitButton.getScene().getWindow()
         );
         if (files != null) {
-            selectedImages.addAll(files);
+            for (File file : files) {
+                if (!selectedImages.contains(file)) {
+                    selectedImages.add(file);
+                }
+            }
             renderImagePreviews();
         }
     }
@@ -146,7 +229,7 @@ public class ProductController {
         try {
             Parent root = FXMLLoader.load(
                     Objects.requireNonNull(
-                            getClass().getResource("/fxml/MainWindow.fxml")
+                            getClass().getResource("/com/teipsum/shopcmsdesktop/MainWindow.fxml")
                     )
             );
             Stage stage = (Stage) backButton.getScene().getWindow();
@@ -157,31 +240,45 @@ public class ProductController {
         }
     }
 
-    private void renderSizeChips() {
-        sizesBox.getChildren().clear();
+    private void createSizeButtonsOnce() {
         for (String size : STANDARD_SIZES) {
             Button chip = new Button(size);
-            boolean isSelected = selectedSizes.contains(size);
-            chip.getStyleClass().add(isSelected ? "size-chip-selected" : "size-chip");
+            chip.setFocusTraversable(false);
             chip.setOnAction(e -> {
                 if (selectedSizes.contains(size)) {
                     selectedSizes.remove(size);
                 } else {
                     selectedSizes.add(size);
                 }
-                renderSizeChips();
+                updateSizeButtonsState();
             });
+            standardSizeButtons.add(chip);
             sizesBox.getChildren().add(chip);
         }
+    }
+
+    private void updateSizeButtonsState() {
+        for (Button chip : standardSizeButtons) {
+            String size = chip.getText();
+            boolean isSelected = selectedSizes.contains(size);
+            chip.getStyleClass().setAll(isSelected ? "size-chip-selected" : "size-chip");
+        }
+
+        for (Button btn : customSizeButtons) {
+            sizesBox.getChildren().remove(btn);
+        }
+        customSizeButtons.clear();
 
         for (String size : selectedSizes) {
             if (!STANDARD_SIZES.contains(size)) {
-                Button chip = new Button(size + " ✕");
-                chip.getStyleClass().add("size-chip-selected");
+                Button chip = new Button(size + " X");
+                chip.getStyleClass().setAll("size-chip-selected");
+                chip.setFocusTraversable(false);
                 chip.setOnAction(e -> {
                     selectedSizes.remove(size);
-                    renderSizeChips();
+                    updateSizeButtonsState();
                 });
+                customSizeButtons.add(chip);
                 sizesBox.getChildren().add(chip);
             }
         }
@@ -189,15 +286,136 @@ public class ProductController {
 
     private void renderImagePreviews() {
         imagePreviewBox.getChildren().clear();
-        for (File file : selectedImages) {
+        for (int i = 0; i < selectedImages.size(); i++) {
+            File file = selectedImages.get(i);
+            final int index = i;
             try {
-                ImageView iv = new ImageView(
-                        new Image(file.toURI().toString(), 80, 80, true, true)
-                );
+                if (!file.exists() || !file.isFile()) {
+                    System.err.println("File missing: " + file.getAbsolutePath());
+                    continue;
+                }
+
+                Image fxImage = loadImageWithFallback(file);
+                if (fxImage == null) {
+                    System.err.println("Could not load image: " + file.getName());
+                    continue;
+                }
+
+                StackPane imageContainer = new StackPane();
+                imageContainer.getStyleClass().add("image-preview-container");
+
+                ImageView iv = new ImageView(fxImage);
+                iv.setFitWidth(100);
+                iv.setFitHeight(100);
+                iv.setPreserveRatio(true);
                 iv.getStyleClass().add("image-preview");
-                imagePreviewBox.getChildren().add(iv);
-            } catch (Exception ignored) {}
+
+                Button removeBtn = new Button("X");
+                removeBtn.getStyleClass().add("image-remove-btn");
+                removeBtn.setFocusTraversable(false);
+                removeBtn.setOnAction(e -> {
+                    selectedImages.remove(index);
+                    renderImagePreviews();
+                });
+
+                imageContainer.getChildren().addAll(iv, removeBtn);
+                imagePreviewBox.getChildren().add(imageContainer);
+
+            } catch (Exception e) {
+                System.err.println("Exception loading image " + file.getName() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
         }
+
+        if (!selectedImages.isEmpty()) {
+            dropZoneLabel.setText(selectedImages.size() + " image(s) selected");
+        } else {
+            dropZoneLabel.setText("Drag & drop images here or click Choose Images");
+        }
+    }
+
+    private Image loadImageWithFallback(File file) {
+        String name = file.getName().toLowerCase();
+        long fileSize = file.length();
+        System.out.println("[DEBUG] Loading: " + file.getName() + " | size=" + fileSize + " bytes | path=" + file.getAbsolutePath());
+
+        try {
+            if (name.endsWith(".webp")) {
+                return loadWebp(file);
+            }
+
+            Image image = new Image(file.toURI().toString(), 120, 120, true, true, false);
+            System.out.println("[DEBUG] JavaFX Image result: error=" + image.isError() + " width=" + image.getWidth() + " height=" + image.getHeight());
+            if (!image.isError() && image.getWidth() > 0 && image.getHeight() > 0) {
+                return image;
+            }
+
+            return loadViaImageIO(file);
+        } catch (Exception e) {
+            System.err.println("[DEBUG] Primary load failed: " + e.getMessage());
+            e.printStackTrace();
+            return loadViaImageIO(file);
+        }
+    }
+
+    private Image loadViaImageIO(File file) {
+        System.out.println("[DEBUG] Trying ImageIO for: " + file.getName());
+        try {
+            String contentType = Files.probeContentType(file.toPath());
+            System.out.println("[DEBUG] Detected content type: " + contentType);
+
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(file.getName().substring(file.getName().lastIndexOf('.') + 1).toLowerCase());
+            System.out.println("[DEBUG] Available ImageIO readers:");
+            while (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                System.out.println("  - " + reader.getClass().getName());
+            }
+
+            BufferedImage bufferedImage = ImageIO.read(file);
+            if (bufferedImage == null) {
+                System.err.println("[DEBUG] ImageIO.read() returned null for: " + file.getName());
+                System.err.println("[DEBUG] This means no ImageReader could decode the file.");
+                return null;
+            }
+            System.out.println("[DEBUG] ImageIO success: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight());
+            return convertToFxImage(bufferedImage);
+        } catch (Exception e) {
+            System.err.println("[DEBUG] ImageIO failed: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Image loadWebp(File file) {
+        System.out.println("[DEBUG] Trying WebP load for: " + file.getName());
+        try {
+            BufferedImage bufferedImage = ImageIO.read(file);
+            if (bufferedImage != null) {
+                System.out.println("[DEBUG] WebP loaded via ImageIO: " + bufferedImage.getWidth() + "x" + bufferedImage.getHeight());
+                return convertToFxImage(bufferedImage);
+            }
+        } catch (Exception e) {
+            System.err.println("[DEBUG] WebP load failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+        System.err.println("WebP not supported. Install webp-imageio library or convert to PNG/JPG.");
+        return null;
+    }
+
+    private Image convertToFxImage(BufferedImage bufferedImage) {
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int argb = bufferedImage.getRGB(x, y);
+                pixelWriter.setArgb(x, y, argb);
+            }
+        }
+
+        return writableImage;
     }
 
     private boolean validate() {
@@ -239,8 +457,9 @@ public class ProductController {
         selectedSizes.clear();
         selectedImages.clear();
         availableCheck.setSelected(true);
-        renderSizeChips();
+        updateSizeButtonsState();
         imagePreviewBox.getChildren().clear();
+        dropZoneLabel.setText("Drag & drop images here or click Choose Images");
     }
 
     private void showFieldError(Label label, String msg) {
@@ -250,7 +469,7 @@ public class ProductController {
     }
 
     private void showError(String msg) {
-        errorBanner.setText("❌ " + msg);
+        errorBanner.setText("X " + msg);
         errorBanner.setVisible(true);
         errorBanner.setManaged(true);
         successBanner.setVisible(false);
@@ -258,7 +477,7 @@ public class ProductController {
     }
 
     private void showSuccess(String msg) {
-        successBanner.setText("✅ " + msg);
+        successBanner.setText("OK " + msg);
         successBanner.setVisible(true);
         successBanner.setManaged(true);
         errorBanner.setVisible(false);

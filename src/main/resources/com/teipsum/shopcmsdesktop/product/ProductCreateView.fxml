@@ -5,6 +5,7 @@
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.teipsum.shopcmsdesktop.product.controller.ProductController"
+            fx:id="scrollPane"
             fitToWidth="true"
             stylesheets="@products.css">
 
@@ -97,9 +98,16 @@
 
         <VBox styleClass="form-card" spacing="16">
             <Label text="Images" styleClass="section-title"/>
-            <Button fx:id="uploadButton" text="📁 Choose Images"
-                    styleClass="secondary-button" onAction="#handleUploadImages"/>
-            <FlowPane fx:id="imagePreviewBox" hgap="8" vgap="8" prefWrapLength="800"/>
+
+            <VBox fx:id="dropZone" styleClass="drop-zone" spacing="8" alignment="CENTER">
+                <Label fx:id="dropZoneLabel"
+                       text="📁 Drag &amp; drop images here or click Choose Images"
+                       styleClass="drop-zone-text"/>
+                <Button fx:id="uploadButton" text="Choose Images"
+                        styleClass="secondary-button" onAction="#handleUploadImages"/>
+            </VBox>
+
+            <FlowPane fx:id="imagePreviewBox" hgap="12" vgap="12" prefWrapLength="800"/>
         </VBox>
 
         <VBox styleClass="form-card" spacing="12">
