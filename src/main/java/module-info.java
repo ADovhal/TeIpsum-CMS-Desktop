@@ -16,9 +16,11 @@ module com.teipsum.shopcmsdesktop {
     opens com.teipsum.shopcmsdesktop.auth.model to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.config to javafx.fxml;
     opens com.teipsum.shopcmsdesktop.product.controller to javafx.fxml;
-    opens com.teipsum.shopcmsdesktop.product.model to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.product.model.enums to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.product.service to javafx.fxml;
+    opens com.teipsum.shopcmsdesktop.admin.model to com.fasterxml.jackson.databind;
+    opens com.teipsum.shopcmsdesktop.admin.controller to javafx.fxml;
+    opens com.teipsum.shopcmsdesktop.admin.service to javafx.fxml;
 
     exports com.teipsum.shopcmsdesktop;
     exports com.teipsum.shopcmsdesktop.ui;
@@ -28,7 +30,9 @@ module com.teipsum.shopcmsdesktop {
     exports com.teipsum.shopcmsdesktop.config;
     exports com.teipsum.shopcmsdesktop.http;
     exports com.teipsum.shopcmsdesktop.product.controller;
-    exports com.teipsum.shopcmsdesktop.product.model;
     exports com.teipsum.shopcmsdesktop.product.model.enums;
     exports com.teipsum.shopcmsdesktop.product.service;
+    exports com.teipsum.shopcmsdesktop.admin.model;
+    exports com.teipsum.shopcmsdesktop.admin.controller;
+    exports com.teipsum.shopcmsdesktop.admin.service;
 }

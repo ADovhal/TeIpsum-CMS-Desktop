@@ -18,6 +18,8 @@
                     onAction="#handleAddProduct"/>
             <Button text="Logout" styleClass="cancel-button"
                     onAction="#handleLogout"/>
+            <Button text="+ Add Admin" styleClass="secondary-button"
+                    onAction="#handleAddAdmin"/>
         </HBox>
     </top>
 
