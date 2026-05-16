@@ -6,6 +6,8 @@ module com.teipsum.shopcmsdesktop {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires org.slf4j;
     requires java.net.http;
+    requires javafx.swing;
+    requires com.twelvemonkeys.imageio.webp;
     requires java.desktop;
 
     opens com.teipsum.shopcmsdesktop to javafx.fxml;
@@ -15,6 +17,7 @@ module com.teipsum.shopcmsdesktop {
     opens com.teipsum.shopcmsdesktop.auth.service to javafx.fxml;
     opens com.teipsum.shopcmsdesktop.auth.model to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.config to javafx.fxml;
+    opens com.teipsum.shopcmsdesktop.product.model to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.product.controller to javafx.fxml;
     opens com.teipsum.shopcmsdesktop.product.model.enums to com.fasterxml.jackson.databind;
     opens com.teipsum.shopcmsdesktop.product.service to javafx.fxml;
@@ -29,6 +32,7 @@ module com.teipsum.shopcmsdesktop {
     exports com.teipsum.shopcmsdesktop.auth.service;
     exports com.teipsum.shopcmsdesktop.config;
     exports com.teipsum.shopcmsdesktop.http;
+    exports com.teipsum.shopcmsdesktop.product.model;
     exports com.teipsum.shopcmsdesktop.product.controller;
     exports com.teipsum.shopcmsdesktop.product.model.enums;
     exports com.teipsum.shopcmsdesktop.product.service;

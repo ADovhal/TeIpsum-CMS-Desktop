@@ -16,6 +16,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <javafx.version>21.0.4</javafx.version>
+        <javafx-swing.version>21.0.4</javafx-swing.version>
+        <imageio.version>3.13.1</imageio.version>
         <bootstrapfx.core>0.4.0</bootstrapfx.core>
         <slf4j-simple.version>2.1.0-alpha1</slf4j-simple.version>
         <jackson.databind.version>2.21.3</jackson.databind.version>
@@ -32,6 +34,16 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx-swing.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <version>${imageio.version}</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.bootstrapfx</groupId>
