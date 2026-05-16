@@ -15,6 +15,20 @@ import java.util.Objects;
 public class MainWindow {
 
     @FXML
+    private void handleAddAdmin(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/com/teipsum/shopcmsdesktop/admin/AdminCreateView.fxml")
+            ));
+            Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root, 1200, 700));
+            stage.setTitle("Shop CMS — Create Admin");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleAddProduct(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(

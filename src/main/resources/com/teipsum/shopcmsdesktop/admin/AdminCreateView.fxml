@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.teipsum.shopcmsdesktop.admin.controller.AdminController"
+            fitToWidth="true"
+            stylesheets="@admin.css">
+
+    <VBox styleClass="form-root" spacing="24" style="-fx-padding: 32px;">
+
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <Button fx:id="backButton" text="← Back"
+                    styleClass="back-button" onAction="#handleBack"/>
+            <VBox>
+                <Label text="Create New Admin" styleClass="page-title"/>
+                <Label text="New admin will have full access to the CMS"
+                       styleClass="page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <Label fx:id="errorBanner" styleClass="error-banner"
+               visible="false" managed="false" wrapText="true"/>
+        <Label fx:id="successBanner" styleClass="success-banner"
+               visible="false" managed="false" wrapText="true"/>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Personal Information" styleClass="section-title"/>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="First Name *" styleClass="field-label"/>
+                    <TextField fx:id="nameField" promptText="John"
+                               styleClass="field-input"/>
+                    <Label fx:id="nameError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Last Name *" styleClass="field-label"/>
+                    <TextField fx:id="surnameField" promptText="Doe"
+                               styleClass="field-input"/>
+                    <Label fx:id="surnameError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Phone *" styleClass="field-label"/>
+                    <TextField fx:id="phoneField" promptText="+48123456789"
+                               styleClass="field-input"/>
+                    <Label fx:id="phoneError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Date of Birth *" styleClass="field-label"/>
+                    <DatePicker fx:id="dobPicker" styleClass="field-input"
+                                maxWidth="Infinity"/>
+                    <Label fx:id="dobError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Login Credentials" styleClass="section-title"/>
+
+            <VBox spacing="6">
+                <Label text="Email *" styleClass="field-label"/>
+                <TextField fx:id="emailField" promptText="admin@example.com"
+                           styleClass="field-input"/>
+                <Label fx:id="emailError" styleClass="field-error"
+                       visible="false" managed="false"/>
+            </VBox>
+
+            <VBox spacing="6">
+                <Label text="Password *" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Min. 8 characters"
+                               styleClass="field-input"/>
+                <Label fx:id="passwordError" styleClass="field-error"
+                       visible="false" managed="false"/>
+                <Label text="At least 8 characters" styleClass="hint-label"/>
+            </VBox>
+        </VBox>
+
+        <HBox styleClass="security-note" spacing="12" alignment="CENTER_LEFT">
+            <Label text="🔒" style="-fx-font-size: 20px;"/>
+            <VBox spacing="4">
+                <Label text="Security Notice" styleClass="security-title"/>
+                <Label text="The new admin will receive ALL ADMIN PRIVILEGES. Share credentials securely."
+                       styleClass="security-text" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="16" alignment="CENTER_RIGHT">
+            <Button text="Cancel" styleClass="cancel-button" onAction="#handleBack"/>
+            <Button fx:id="submitButton" text="Create Admin"
+                    styleClass="submit-button" onAction="#handleSubmit"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
