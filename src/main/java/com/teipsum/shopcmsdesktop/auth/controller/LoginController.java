@@ -87,6 +87,7 @@ public class LoginController {
             stage.setScene(new Scene(root, 1200, 700));
             stage.setTitle("Shop CMS — Product Management");
         } catch (Exception e) {
+            e.printStackTrace();
             showGeneralError("Failed to load main window");
         }
     }

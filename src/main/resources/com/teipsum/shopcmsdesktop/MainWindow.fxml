@@ -4,7 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.layout.BorderPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.teipsum.shopcmsdesktop.ui.MainWindow"
             prefWidth="1200" prefHeight="700">
@@ -24,10 +23,43 @@
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="16">
-            <Label text="Product Management" styleClass="page-title"/>
-            <Label text="Click '+ Add Product' to get started"
-                   styleClass="page-subtitle"/>
+        <VBox spacing="16" style="-fx-padding: 24px;">
+
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Products" styleClass="page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="⟳ Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
+            </HBox>
+
+            <Label fx:id="errorBanner" styleClass="error-banner"
+                   visible="false" managed="false" wrapText="true"/>
+            <Label fx:id="successBanner" styleClass="success-banner"
+                   visible="false" managed="false" wrapText="true"/>
+
+            <TableView fx:id="productsTable" VBox.vgrow="ALWAYS">
+                <placeholder>
+                    <Label text="No products found"/>
+                </placeholder>
+                <columns>
+                    <TableColumn fx:id="colTitle"    text="Title"     prefWidth="220"/>
+                    <TableColumn fx:id="colCategory" text="Category"  prefWidth="110"/>
+                    <TableColumn fx:id="colGender"   text="Gender"    prefWidth="90"/>
+                    <TableColumn fx:id="colPrice"    text="Price"     prefWidth="90"/>
+                    <TableColumn fx:id="colDiscount" text="Discount"  prefWidth="90"/>
+                    <TableColumn fx:id="colAvail"    text="Available" prefWidth="90"/>
+                    <TableColumn fx:id="colActions"  text="Actions"   prefWidth="160"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="12" alignment="CENTER">
+                <Button fx:id="prevButton" text="← Prev"
+                        onAction="#handlePrev" styleClass="secondary-button"
+                        disable="true"/>
+                <Label fx:id="pageLabel" text="Page 1"/>
+                <Button fx:id="nextButton" text="Next →"
+                        onAction="#handleNext" styleClass="secondary-button"/>
+            </HBox>
+
         </VBox>
     </center>
 

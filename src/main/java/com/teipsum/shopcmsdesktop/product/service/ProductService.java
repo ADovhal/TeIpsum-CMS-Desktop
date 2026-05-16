@@ -111,6 +111,90 @@ public class ProductService {
         }
     }
 
+    public static Product updateProduct(
+            java.util.UUID id,
+            String title,
+            String description,
+            BigDecimal price,
+            BigDecimal discount,
+            ProductCategory category,
+            ProductSubcategory subcategory,
+            Gender gender,
+            List<String> sizes,
+            boolean available,
+            List<File> imageFiles
+    ) throws Exception {
+
+        String boundary = "----JavaFXBoundary" + System.currentTimeMillis();
+
+        StringBuilder productJson = new StringBuilder("{");
+        productJson.append("\"title\":\"").append(escapeJson(title)).append("\",");
+        productJson.append("\"description\":\"").append(escapeJson(description)).append("\",");
+        productJson.append("\"price\":").append(price).append(",");
+        if (discount != null) {
+            productJson.append("\"discount\":").append(discount).append(",");
+        }
+        productJson.append("\"category\":\"").append(category.name()).append("\",");
+        if (subcategory != null) {
+            productJson.append("\"subcategory\":\"").append(subcategory.name()).append("\",");
+        }
+        if (gender != null) {
+            productJson.append("\"gender\":\"").append(gender.name()).append("\",");
+        }
+        productJson.append("\"sizes\":[");
+        for (int i = 0; i < sizes.size(); i++) {
+            productJson.append("\"").append(sizes.get(i)).append("\"");
+            if (i < sizes.size() - 1) productJson.append(",");
+        }
+        productJson.append("],");
+        productJson.append("\"available\":").append(available);
+        productJson.append("}");
+
+        var bodyBuilder = new java.io.ByteArrayOutputStream();
+
+        String productPart = "--" + boundary + "\r\n" +
+                "Content-Disposition: form-data; name=\"product\"\r\n" +
+                "Content-Type: application/json\r\n\r\n" +
+                productJson + "\r\n";
+        bodyBuilder.write(productPart.getBytes());
+
+        if (imageFiles != null) {
+            for (File file : imageFiles) {
+                String imagePart = "--" + boundary + "\r\n" +
+                        "Content-Disposition: form-data; name=\"images\"; filename=\""
+                        + file.getName() + "\"\r\n" +
+                        "Content-Type: " + Files.probeContentType(file.toPath()) + "\r\n\r\n";
+                bodyBuilder.write(imagePart.getBytes());
+                bodyBuilder.write(Files.readAllBytes(file.toPath()));
+                bodyBuilder.write("\r\n".getBytes());
+            }
+        }
+
+        bodyBuilder.write(("--" + boundary + "--\r\n").getBytes());
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(AppConfig.getApiBaseUrl() + PRODUCTS_PATH + "/" + id))
+                .timeout(Duration.ofSeconds(30))
+                .header("Authorization", "Bearer " + TokenStore.getAccessToken())
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .PUT(HttpRequest.BodyPublishers.ofByteArray(bodyBuilder.toByteArray()))
+                .build();
+
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            return parseProduct(response.body());
+        } else if (response.statusCode() == 401) {
+            throw new SecurityException("Unauthorized — please login again");
+        } else if (response.statusCode() == 403) {
+            throw new SecurityException("Forbidden — admin role required");
+        } else {
+            throw new RuntimeException("Failed to update product: " + response.statusCode()
+                    + " — " + response.body());
+        }
+    }
+
     public static ProductPage getProducts(int page, int size) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(AppConfig.getApiBaseUrl() + PRODUCTS_PATH

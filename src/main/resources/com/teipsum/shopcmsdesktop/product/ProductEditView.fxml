@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.teipsum.shopcmsdesktop.product.controller.ProductEditController"
+            fx:id="scrollPane"
+            fitToWidth="true"
+            stylesheets="@products.css">
+
+    <VBox styleClass="form-root" spacing="24" style="-fx-padding: 32px;">
+
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <Button fx:id="backButton" text="← Back"
+                    styleClass="back-button" onAction="#handleBack"/>
+            <VBox>
+                <Label text="Edit Product" styleClass="page-title"/>
+                <Label text="Update the product details below"
+                       styleClass="page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <Label fx:id="errorBanner" styleClass="error-banner"
+               visible="false" managed="false" wrapText="true"/>
+        <Label fx:id="successBanner" styleClass="success-banner"
+               visible="false" managed="false" wrapText="true"/>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Basic Information" styleClass="section-title"/>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Title *" styleClass="field-label"/>
+                    <TextField fx:id="titleField" promptText="Product title"
+                               styleClass="field-input"/>
+                    <Label fx:id="titleError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="6">
+                <Label text="Description" styleClass="field-label"/>
+                <TextArea fx:id="descriptionField" promptText="Product description"
+                          styleClass="field-input" prefRowCount="4" wrapText="true"/>
+            </VBox>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Price *" styleClass="field-label"/>
+                    <TextField fx:id="priceField" promptText="0.00"
+                               styleClass="field-input"/>
+                    <Label fx:id="priceError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Discount (%)" styleClass="field-label"/>
+                    <TextField fx:id="discountField" promptText="0.00"
+                               styleClass="field-input"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Category" styleClass="section-title"/>
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Category *" styleClass="field-label"/>
+                    <ComboBox fx:id="categoryCombo" styleClass="field-input"
+                              maxWidth="Infinity" onAction="#handleCategoryChange"/>
+                    <Label fx:id="categoryError" styleClass="field-error"
+                           visible="false" managed="false"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Subcategory" styleClass="field-label"/>
+                    <ComboBox fx:id="subcategoryCombo" styleClass="field-input"
+                              maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Gender" styleClass="field-label"/>
+                    <ComboBox fx:id="genderCombo" styleClass="field-input"
+                              maxWidth="Infinity"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Sizes" styleClass="section-title"/>
+            <FlowPane fx:id="sizesBox" hgap="8" vgap="8" prefWrapLength="600"/>
+            <HBox spacing="8">
+                <TextField fx:id="customSizeField" promptText="Add custom size"
+                           styleClass="field-input" HBox.hgrow="ALWAYS"/>
+                <Button text="Add" styleClass="secondary-button"
+                        onAction="#handleAddCustomSize"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="form-card" spacing="16">
+            <Label text="Images" styleClass="section-title"/>
+            <Label text="Existing images are kept on the server. Upload new ones to add more."
+                   styleClass="page-subtitle" wrapText="true"/>
+
+            <VBox fx:id="dropZone" styleClass="drop-zone" spacing="8" alignment="CENTER">
+                <Label fx:id="dropZoneLabel"
+                       text="📁 Drag &amp; drop images here or click Choose Images"
+                       styleClass="drop-zone-text"/>
+                <Button text="Choose Images"
+                        styleClass="secondary-button" onAction="#handleUploadImages"/>
+            </VBox>
+
+            <FlowPane fx:id="imagePreviewBox" hgap="12" vgap="12" prefWrapLength="800"/>
+        </VBox>
+
+        <VBox styleClass="form-card" spacing="12">
+            <Label text="Availability" styleClass="section-title"/>
+            <CheckBox fx:id="availableCheck" text="Product is available for purchase"
+                      selected="true" styleClass="field-label"/>
+        </VBox>
+
+        <HBox spacing="16" alignment="CENTER_RIGHT">
+            <Button fx:id="cancelButton" text="Cancel"
+                    styleClass="cancel-button" onAction="#handleBack"/>
+            <Button fx:id="submitButton" text="Save Changes"
+                    styleClass="submit-button" onAction="#handleSubmit"/>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
